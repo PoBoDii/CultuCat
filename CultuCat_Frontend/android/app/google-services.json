@@ -1,0 +1,95 @@
+{
+  "project_info": {
+    "project_number": "627361310467",
+    "project_id": "cultucat-b12b6",
+    "storage_bucket": "cultucat-b12b6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:627361310467:android:1d64b5cfdcf3657969ab36",
+        "android_client_info": {
+          "package_name": "cat.cultucat.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "627361310467-1b82cdi5hc29urnb0809onn7crdar987.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "cat.cultucat.app",
+            "certificate_hash": "18634f58b49feb71c747409757fb57a0494cbd24"
+          }
+        },
+        {
+          "client_id": "627361310467-4ucvgpsbmtfkf31m367ok1ur9co7khjj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "cat.cultucat.app",
+            "certificate_hash": "3479b3c3fcbb899327dd75d670c7af636f6cd0b2"
+          }
+        },
+        {
+          "client_id": "627361310467-gv8661oc3n2hv51f26hf891r92ca7ft6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "cat.cultucat.app",
+            "certificate_hash": "f2172a295e0f348046e652b213013507d2581d4e"
+          }
+        },
+        {
+          "client_id": "627361310467-hd2i3h7ahvit53hghiosugkelm3752n7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "cat.cultucat.app",
+            "certificate_hash": "0581d3155649d4fc31cb1a2b14b60b4859698f02"
+          }
+        },
+        {
+          "client_id": "627361310467-q24t6lded4g6u4r3h1oj621vecsgs6hc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "cat.cultucat.app",
+            "certificate_hash": "a9825d0d3a37e2920e5c92c2558f657163666d62"
+          }
+        },
+        {
+          "client_id": "627361310467-tg9t7r8asv2ecmfucp1porginffiqtto.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "cat.cultucat.app",
+            "certificate_hash": "b8e13318065a64ecc45376c468be6d832626d84f"
+          }
+        },
+        {
+          "client_id": "627361310467-uspka5ph6h9e7vap4kv8h528ntitefo1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "cat.cultucat.app",
+            "certificate_hash": "b4aa33e3772cdb83958e21c52ee143bdfbef12c5"
+          }
+        },
+        {
+          "client_id": "627361310467-3cricd513ap7nk06ovhdt3ehd8g8cqvu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKLt9iaSVL5m3YrJrBi9_SAoCFrFNUkUw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "627361310467-3cricd513ap7nk06ovhdt3ehd8g8cqvu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
