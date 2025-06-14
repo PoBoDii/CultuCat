@@ -1,0 +1,201 @@
+Name                                                       Stmts   Miss  Cover   Missing
+----------------------------------------------------------------------------------------
+CultuCat_Django/__init__.py                                    0      0   100%
+CultuCat_Django/asgi.py                                        4      4     0%   10-16
+CultuCat_Django/settings.py                                   37      3    92%   134-147
+CultuCat_Django/urls.py                                       10      0   100%
+CultuCat_Django/wsgi.py                                       11     11     0%   9-23
+accounts/__init__.py                                           1      0   100%
+accounts/admin.py                                              3      0   100%
+accounts/apps.py                                               6      0   100%
+accounts/migrations/0001_initial.py                            7      0   100%
+accounts/migrations/__init__.py                                0      0   100%
+accounts/models.py                                            17      1    94%   30
+accounts/serializers.py                                        8      0   100%
+accounts/signals.py                                            9      3    67%   9-18
+accounts/tests.py                                            124      0   100%
+accounts/urls.py                                               3      3     0%   1-4
+accounts/views.py                                            179     72    60%   43-97, 201-204, 210-236, 243-274, 281-284
+calendars/__init__.py                                          0      0   100%
+calendars/admin.py                                             3      0   100%
+calendars/apps.py                                              4      0   100%
+calendars/migrations/0001_initial.py                           5      0   100%
+calendars/migrations/0002_alter_calendar_table.py              4      0   100%
+calendars/migrations/__init__.py                               0      0   100%
+calendars/models.py                                            8      1    88%   12
+calendars/tests.py                                             1      0   100%
+calendars/views.py                                             1      1     0%   1
+categoriaevents/__init__.py                                    0      0   100%
+categoriaevents/admin.py                                       3      0   100%
+categoriaevents/apps.py                                        4      0   100%
+categoriaevents/migrations/0001_initial.py                     6      0   100%
+categoriaevents/migrations/__init__.py                         0      0   100%
+categoriaevents/models.py                                     12      1    92%   22
+categoriaevents/tests.py                                       1      0   100%
+categoriaevents/views.py                                       1      1     0%   1
+categories/__init__.py                                         0      0   100%
+categories/admin.py                                            3      0   100%
+categories/apps.py                                             4      0   100%
+categories/migrations/0001_initial.py                          5      0   100%
+categories/migrations/__init__.py                              0      0   100%
+categories/models.py                                           8      1    88%   12
+categories/tests.py                                            1      0   100%
+categories/views.py                                            1      1     0%   1
+chat_messages/__init__.py                                      0      0   100%
+chat_messages/admin.py                                         3      0   100%
+chat_messages/apps.py                                          4      0   100%
+chat_messages/migrations/0001_initial.py                       5      0   100%
+chat_messages/migrations/__init__.py                           0      0   100%
+chat_messages/models.py                                       28      9    68%   23-30, 33-34, 37
+chat_messages/tests.py                                         1      0   100%
+chat_messages/views.py                                         1      1     0%   1
+chats/__init__.py                                              0      0   100%
+chats/admin.py                                                 3      0   100%
+chats/apps.py                                                  4      0   100%
+chats/migrations/0001_initial.py                               5      0   100%
+chats/migrations/__init__.py                                   0      0   100%
+chats/models.py                                               13      1    92%   23
+chats/tests.py                                                 1      0   100%
+chats/views.py                                                 1      1     0%   1
+datetimes/__init__.py                                          0      0   100%
+datetimes/admin.py                                             3      0   100%
+datetimes/apps.py                                              4      0   100%
+datetimes/migrations/0001_initial.py                           5      0   100%
+datetimes/migrations/__init__.py                               0      0   100%
+datetimes/models.py                                           10      1    90%   14
+datetimes/tests.py                                             1      0   100%
+datetimes/urls.py                                              3      3     0%   1-4
+datetimes/views.py                                             1      1     0%   1
+documents/__init__.py                                          0      0   100%
+documents/admin.py                                             3      0   100%
+documents/apps.py                                              4      0   100%
+documents/migrations/0001_initial.py                           6      0   100%
+documents/migrations/__init__.py                               0      0   100%
+documents/models.py                                            9      1    89%   13
+documents/tests.py                                             1      0   100%
+documents/views.py                                             1      1     0%   1
+eventchats/__init__.py                                         0      0   100%
+eventchats/admin.py                                            3      0   100%
+eventchats/apps.py                                             4      0   100%
+eventchats/migrations/0001_initial.py                          6      0   100%
+eventchats/migrations/__init__.py                              0      0   100%
+eventchats/models.py                                           9      1    89%   13
+eventchats/tests.py                                            1      0   100%
+eventchats/urls.py                                             3      0   100%
+eventchats/views.py                                          124    101    19%   24-85, 97-136, 148-193, 203-281
+eventos/__init__.py                                            0      0   100%
+eventos/admin.py                                               3      0   100%
+eventos/apps.py                                                4      0   100%
+eventos/migrations/0001_initial.py                             5      0   100%
+eventos/migrations/__init__.py                                 0      0   100%
+eventos/models.py                                             24      1    96%   28
+eventos/tests.py                                               1      0   100%
+eventos/views.py                                             103     86    17%   23-43, 47-125, 139-252
+fields/__init__.py                                             0      0   100%
+fields/admin.py                                                3      0   100%
+fields/apps.py                                                 4      0   100%
+fields/migrations/0001_initial.py                              5      0   100%
+fields/migrations/__init__.py                                  0      0   100%
+fields/models.py                                               8      1    88%   12
+fields/tests.py                                                1      0   100%
+fields/views.py                                                1      1     0%   1
+files/__init__.py                                              0      0   100%
+files/admin.py                                                 3      0   100%
+files/apps.py                                                  4      0   100%
+files/migrations/0001_initial.py                               5      0   100%
+files/migrations/__init__.py                                   0      0   100%
+files/models.py                                               14      1    93%   23
+files/tests.py                                                 1      0   100%
+files/views.py                                                 1      1     0%   1
+groupchats/__init__.py                                         0      0   100%
+groupchats/admin.py                                            3      0   100%
+groupchats/apps.py                                             4      0   100%
+groupchats/migrations/0001_initial.py                          6      0   100%
+groupchats/migrations/__init__.py                              0      0   100%
+groupchats/models.py                                           9      1    89%   13
+groupchats/tests.py                                            1      0   100%
+groupchats/views.py                                            1      1     0%   1
+groups/__init__.py                                             0      0   100%
+groups/admin.py                                                3      0   100%
+groups/apps.py                                                 4      0   100%
+groups/migrations/0001_initial.py                              5      0   100%
+groups/migrations/0002_alter_group_table_grouprequest.py       5      0   100%
+groups/migrations/__init__.py                                  0      0   100%
+groups/models.py                                              32      3    91%   17, 47-48
+groups/tests.py                                                1      0   100%
+groups/urls.py                                                 3      0   100%
+groups/views.py                                              283    235    17%   29-70, 83-165, 177-221, 233-284, 296-345, 356-422, 435-474, 487-546, 559-622, 633-659, 671-730
+images/__init__.py                                             0      0   100%
+images/admin.py                                                3      0   100%
+images/apps.py                                                 4      0   100%
+images/migrations/0001_initial.py                              6      0   100%
+images/migrations/__init__.py                                  0      0   100%
+images/models.py                                               9      1    89%   13
+images/tests.py                                                1      0   100%
+images/views.py                                                1      1     0%   1
+manage.py                                                     11      2    82%   12-13
+participants/__init__.py                                       0      0   100%
+participants/admin.py                                          3      0   100%
+participants/apps.py                                           4      0   100%
+participants/migrations/0001_initial.py                        6      0   100%
+participants/migrations/__init__.py                            0      0   100%
+participants/models.py                                        17      1    94%   29
+participants/tests.py                                          1      0   100%
+participants/views.py                                          1      1     0%   1
+places/__init__.py                                             0      0   100%
+places/admin.py                                                3      0   100%
+places/apps.py                                                 4      0   100%
+places/migrations/0001_initial.py                              5      0   100%
+places/migrations/__init__.py                                  0      0   100%
+places/models.py                                              13      1    92%   26
+places/tests.py                                                1      0   100%
+places/views.py                                                1      1     0%   1
+plannedactivities/__init__.py                                  0      0   100%
+plannedactivities/admin.py                                     3      0   100%
+plannedactivities/apps.py                                      4      0   100%
+plannedactivities/migrations/0001_initial.py                   5      0   100%
+plannedactivities/migrations/__init__.py                       0      0   100%
+plannedactivities/models.py                                   12      1    92%   22
+plannedactivities/tests.py                                     1      0   100%
+plannedactivities/urls.py                                      3      0   100%
+plannedactivities/views.py                                   115     97    16%   22-110, 121-190, 200-268
+privatechats/__init__.py                                       0      0   100%
+privatechats/admin.py                                          3      0   100%
+privatechats/apps.py                                           4      0   100%
+privatechats/migrations/0001_initial.py                        6      0   100%
+privatechats/migrations/__init__.py                            0      0   100%
+privatechats/models.py                                        12      1    92%   16
+privatechats/tests.py                                          1      0   100%
+privatechats/views.py                                        129     93    28%   23-48, 56-80, 85-127, 132-163, 189-266
+reviews/__init__.py                                            0      0   100%
+reviews/admin.py                                               3      0   100%
+reviews/apps.py                                                4      0   100%
+reviews/migrations/0001_initial.py                             6      0   100%
+reviews/migrations/__init__.py                                 0      0   100%
+reviews/models.py                                             16      1    94%   40
+reviews/serializers.py                                         7      0   100%
+reviews/tests.py                                               1      0   100%
+reviews/views.py                                              51     36    29%   15-17, 26-62, 71-85
+service/__init__.py                                            0      0   100%
+service/apps.py                                                4      0   100%
+service/tests.py                                               1      0   100%
+service/views.py                                              39     26    33%   15-37, 43-48, 68-130
+tematicaactivitats/__init__.py                                 0      0   100%
+tematicaactivitats/admin.py                                    3      0   100%
+tematicaactivitats/apps.py                                     4      0   100%
+tematicaactivitats/migrations/0001_initial.py                  6      0   100%
+tematicaactivitats/migrations/__init__.py                      0      0   100%
+tematicaactivitats/models.py                                  12      1    92%   22
+tematicaactivitats/tests.py                                    1      0   100%
+tematicaactivitats/views.py                                    1      1     0%   1
+update_BD.py                                                 220    220     0%   1-413
+videos/__init__.py                                             0      0   100%
+videos/admin.py                                                3      0   100%
+videos/apps.py                                                 4      0   100%
+videos/migrations/0001_initial.py                              6      0   100%
+videos/migrations/__init__.py                                  0      0   100%
+videos/models.py                                               9      1    89%   13
+videos/tests.py                                                1      0   100%
+videos/views.py                                                1      1     0%   1
+----------------------------------------------------------------------------------------
+TOTAL                                                       2109   1042    51%

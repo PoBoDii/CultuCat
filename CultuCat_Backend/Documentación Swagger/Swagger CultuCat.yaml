@@ -1,0 +1,2721 @@
+openapi: 3.0.3
+info:
+  title: CultuCat API
+  version: v1
+  description: CultuCat API con todas las rutas
+  contact:
+    name: CultuCat
+    url: http://CultuCat.com
+    email: shence.zhou@estudiantat.upc.edu
+
+servers:
+  - url: http://nattech.fib.upc.edu:40340
+  - url: http://127.0.0.1:8000/
+
+tags:
+  - name: Events
+    description: Endpoints relacionados con eventos
+  - name: Service
+    description: Endpoints relacionados con servicios ofrecidos a terceros
+  - name: Auth
+    description: Endpoints para autenticación, registro y gestión de usuarios
+  - name: Private Chat
+    description: Endpoints relacionados con la gestión de chats personales
+  - name: Users
+    description: Endpoints relacionados con la gestión de usuarios
+  - name: Profile
+    description: Endpoints relacionados con la gestión del perfil
+  - name: Reviews
+    description: Endpoints relacionados con la gestión de reviews
+  - name: Calendar
+    description: Endpoints relacionados con la gestión del calendario
+  - name: Event Chat
+    description: Endpoints relacionados con la gestión de chats de evento
+  - name: Groups
+    description: Endpoints relacionados con la gestion de grupos de usuarios
+  - name: Friendships
+    description: Endpoints relacionados con la gestión de amistades
+paths:
+  /service/events-all:
+    get:
+      tags:
+        - Service
+      summary: Obtener todos los eventos disponibles
+      operationId: getAllEvents
+      responses:
+        '200':
+          description: Lista completa de eventos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventsResponse'
+
+  /service/events-search:
+    get:
+      tags:
+        - Service
+      summary: Buscar eventos por coordenadas y texto
+      operationId: searchEventsService
+      parameters:
+        - name: latitude
+          in: query
+          required: true
+          schema:
+            type: number
+            format: float
+        - name: longitude
+          in: query
+          required: true
+          schema:
+            type: number
+            format: float
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Resultados de la búsqueda de eventos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+
+  /api/calcular-ruta/:
+    post:
+      tags:
+        - Service
+      summary: Calcular ruta entre dos puntos con modo y preferencia
+      operationId: calcularRuta
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - originLat
+                - originLng
+                - destinationLat
+                - destinationLng
+                - mode
+                - preference
+              properties:
+                originLat:
+                  type: number
+                  format: float
+                  example: 41.3851
+                originLng:
+                  type: number
+                  format: float
+                  example: 2.1734
+                destinationLat:
+                  type: number
+                  format: float
+                  example: 41.3972
+                destinationLng:
+                  type: number
+                  format: float
+                  example: 2.1609
+                mode:
+                  type: string
+                  example: "driving"
+                preference:
+                  type: string
+                  example: "fastest"
+      responses:
+        '200':
+          description: Ruta calculada correctamente (sin instrucciones)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  distance:
+                    type: number
+                    example: 3500
+                  duration:
+                    type: number
+                    example: 900
+                  route:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        latitude:
+                          type: number
+                        longitude:
+                          type: number
+        '400':
+          description: Parámetros faltantes o JSON inválido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Missing parameters"
+        '405':
+          description: Método no permitido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Method not allowed"
+        '502':
+          description: Error al llamar a la API externa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Error from external API"
+                  details:
+                    type: string
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  details:
+                    type: string
+
+  /events:
+    get:
+      tags:
+        - Events
+      summary: Lista de eventos con localización
+      operationId: listEvents
+      responses:
+        '200':
+          description: Lista de eventos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  events:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EventBasic'
+
+  /events/rated/:
+    get:
+      tags:
+        - Events
+      summary: Lista de eventos ordenados por puntuación
+      operationId: listEventsByRating
+      responses:
+        '200':
+          description: Lista de eventos con rating
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  events:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EventRated'
+
+  /events/{event_id}/:
+    get:
+      tags:
+        - Events
+      summary: Detalle completo de un evento
+      operationId: getEventDetail
+      parameters:
+        - name: event_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Detalle del evento
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  event:
+                    $ref: '#/components/schemas/EventDetail'
+        '404':
+          description: Evento no encontrado
+        '500':
+          description: Error interno
+
+  /events/search/:
+    get:
+      tags:
+        - Events
+      summary: Buscar eventos por nombre, ubicación y filtros
+      operationId: searchEvents
+      parameters:
+        - name: latitude
+          in: query
+          required: true
+          schema:
+            type: number
+            format: float
+        - name: longitude
+          in: query
+          required: true
+          schema:
+            type: number
+            format: float
+        - name: query
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+            example: "Festa,Teatre"
+        - name: start_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: exact_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: max_distance
+          in: query
+          required: false
+          schema:
+            type: number
+            format: float
+      responses:
+        '200':
+          description: Eventos filtrados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EventSearchResult'
+        '400':
+          description: Error de validación en parámetros
+        '500':
+          description: Error interno del servidor
+
+  /api/login/:
+    post:
+      tags:
+        - Auth
+      summary: Login manual con usuario y contraseña
+      operationId: apiLogin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login exitoso con token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  token:
+                    type: string
+        '400':
+          description: Username o password incorrectos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /api/auth/google/:
+    post:
+      tags:
+        - Auth
+      summary: Login con Google mediante token Firebase
+      operationId: googleAuthLogin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id_token
+              properties:
+                id_token:
+                  type: string
+                name:
+                  type: string
+                email:
+                  type: string
+                photo_url:
+                  type: string
+      responses:
+        '200':
+          description: Login exitoso con token y datos usuario
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                      user_id:
+                        type: integer
+                      username:
+                        type: string
+                      email:
+                        type: string
+        '400':
+          description: Token no proporcionado o error en datos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '401':
+          description: Token Firebase inválido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /api/register/:
+    post:
+      tags:
+        - Auth
+      summary: Registro de nuevo usuario
+      operationId: apiRegister
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - email
+                - password
+                - confirm_password
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                confirm_password:
+                  type: string
+      responses:
+        '201':
+          description: Registro completado con token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  token:
+                    type: string
+        '400':
+          description: Error en datos de registro
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /api/send-password-reset/:
+    post:
+      tags:
+        - Auth
+      summary: Solicitar envío de email para restablecer contraseña
+      operationId: sendPasswordResetEmail
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Email de restablecimiento enviado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: Email no válido o no registrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /api/reset-password/:
+    post:
+      tags:
+        - Auth
+      summary: Restablecer contraseña con token de seguridad
+      operationId: resetPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+                - new_password
+                - confirm_password
+              properties:
+                token:
+                  type: string
+                new_password:
+                  type: string
+                confirm_password:
+                  type: string
+      responses:
+        '200':
+          description: Contraseña restablecida
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: Token inválido o contraseña inválida
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /api/chat/list/:
+    get:
+      tags:
+        - Private Chat
+      summary: Listar chats privados y amigos sin chat
+      operationId: listPrivateChats
+      security:
+        - TokenAuth: []
+      responses:
+        '200':
+          description: Lista combinada de chats privados y amigos sin chat
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      nullable: true
+                      description: ID del chat (null si no hay chat)
+                    username:
+                      type: string
+                      description: Nombre de usuario del interlocutor
+                    lastMessage:
+                      type: string
+                      description: Último mensaje del chat
+                    time:
+                      type: string
+                      description: Fecha y hora del último mensaje
+                    unread:
+                      type: integer
+                      description: Conteo de mensajes no leídos (actualmente siempre 0)
+                    hasChat:
+                      type: boolean
+                      description: Indica si ya existe chat con el usuario
+                    userId:
+                      type: integer
+                      nullable: true
+                      description: ID del usuario (solo si no hay chat)
+
+  /api/chat/{chat_id}/messages/:
+    get:
+      tags:
+        - Private Chat
+      summary: Obtener mensajes de un chat privado
+      operationId: getPrivateMessages
+      security:
+        - TokenAuth: []
+      parameters:
+        - name: chat_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID del chat privado
+      responses:
+        '200':
+          description: Lista de mensajes en el chat
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    senderUsername:
+                      type: string
+                      description: Nombre de usuario del remitente
+                    message:
+                      type: string
+                      description: Contenido del mensaje
+                    date:
+                      type: string
+                      format: date
+                      description: Fecha del mensaje
+                    time:
+                      type: string
+                      description: Hora del mensaje
+        '404':
+          description: Chat no encontrado o acceso denegado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /api/chat/send/:
+    post:
+      tags:
+        - Private Chat
+      summary: Enviar un mensaje a un chat privado
+      operationId: sendPrivateMessage
+      security:
+        - TokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - chat_id
+                - message
+              properties:
+                chat_id:
+                  type: integer
+                  description: ID del chat privado
+                message:
+                  type: string
+                  description: Texto del mensaje a enviar
+      responses:
+        '201':
+          description: Mensaje enviado correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  senderUsername:
+                    type: string
+                  message:
+                    type: string
+                  date:
+                    type: string
+                    format: date
+                  time:
+                    type: string
+        '400':
+          description: Parámetros obligatorios no proporcionados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '404':
+          description: Chat no encontrado o sin permiso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /api/chat/create/:
+    post:
+      tags:
+        - Private Chat
+      summary: Crear un chat privado con otro usuario
+      operationId: createPrivateChat
+      security:
+        - TokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - to_user_id
+              properties:
+                to_user_id:
+                  type: integer
+                  description: ID del usuario con quien crear el chat
+      responses:
+        '201':
+          description: Chat creado correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  chat_id:
+                    type: integer
+                  username:
+                    type: string
+                  exists:
+                    type: boolean
+        '200':
+          description: Chat ya existente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  chat_id:
+                    type: integer
+                  username:
+                    type: string
+                  exists:
+                    type: boolean
+        '400':
+          description: Falta parámetro obligatorio
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '404':
+          description: Usuario destino no encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /api/users/:
+    get:
+      tags:
+        - Users
+      summary: Listar todos los usuarios excepto el actual
+      operationId: listUsers
+      security:
+        - TokenAuth: []
+      responses:
+        '200':
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    username:
+                      type: string
+
+  /api/users/by-chats/:
+    get:
+      tags:
+        - Users
+      summary: Listar usuarios ordenados por actividad en chats con el usuario actual
+      operationId: listUsersOrderedByChats
+      security:
+        - TokenAuth: []
+      responses:
+        '200':
+          description: Lista de usuarios con información de chats
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    username:
+                      type: string
+                    has_chat:
+                      type: boolean
+                    chat_id:
+                      type: integer
+                      nullable: true
+                    lastMessage:
+                      type: string
+                      nullable: true
+                    time:
+                      type: string
+                      nullable: true
+                    lastSender:
+                      type: string
+                      nullable: true
+
+  /api/ver-perfil/:
+    get:
+      tags:
+        - Profile
+      summary: Obtener datos del perfil del usuario autenticado
+      operationId: getUserProfile
+      security:
+        - TokenAuth: []
+      responses:
+        '200':
+          description: Perfil del usuario
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                  email:
+                    type: string
+                  profilephoto:
+                    type: integer
+                    nullable: true
+                  telf:
+                    type: string
+                    nullable: true
+                  language:
+                    type: string
+                    nullable: true
+        '500':
+          description: Error interno al obtener el perfil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /api/editar-perfil/:
+    post:
+      tags:
+        - Profile
+      summary: Editar datos del perfil del usuario autenticado
+      operationId: editUserProfile
+      security:
+        - TokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                profilephoto_id:
+                  type: integer
+                  nullable: true
+                telf:
+                  type: string
+                language:
+                  type: string
+      responses:
+        '200':
+          description: Perfil actualizado correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  perfil:
+                    type: object
+                    properties:
+                      username:
+                        type: string
+                      email:
+                        type: string
+                      profilephoto:
+                        type: integer
+                        nullable: true
+                      telf:
+                        type: string
+                      language:
+                        type: string
+        '400':
+          description: Error de validación en los datos de entrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Error interno al actualizar el perfil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /api/eliminar-cuenta/:
+    delete:
+      tags:
+        - Profile
+      summary: Eliminar la cuenta del usuario autenticado
+      operationId: deleteUserAccount
+      security:
+        - TokenAuth: []
+      responses:
+        '200':
+          description: Cuenta eliminada correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '401':
+          description: No autorizado
+        '500':
+          description: Error interno al eliminar la cuenta
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /api/reviews/{evento_id}/:
+    get:
+      tags:
+        - Reviews
+      summary: Obtener todas las reviews de un evento
+      operationId: verReviews
+      security:
+        - TokenAuth: []
+      parameters:
+        - name: evento_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de reviews o mensaje si no hay ninguna
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/Review'
+                  - type: object
+                    properties:
+                      mensaje:
+                        type: string
+        '404':
+          description: Evento no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/reviews/{evento_id}/crear/:
+    post:
+      tags:
+        - Reviews
+      summary: Crear una review para un evento
+      operationId: crearReview
+      security:
+        - TokenAuth: []
+      parameters:
+        - name: evento_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - rating
+              properties:
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                text:
+                  type: string
+      responses:
+        '201':
+          description: Review creada correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '400':
+          description: Error en datos de entrada o review ya creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Usuario o evento no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/reviews/{evento_id}/borrar/:
+    delete:
+      tags:
+        - Reviews
+      summary: Borrar la review del usuario autenticado para un evento
+      operationId: borrarReview
+      security:
+        - TokenAuth: []
+      parameters:
+        - name: evento_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Review eliminada correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+        '404':
+          description: Review, usuario o evento no encontrados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/reviews/{evento_id}/sorted/:
+    get:
+      tags:
+        - Reviews
+      summary: Obtener reviews de un evento ordenadas por likes-dislikes
+      operationId: verReviewsOrdenadas
+      parameters:
+        - name: evento_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Reviews ordenadas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Review'
+        '404':
+          description: Evento no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/reviews/{evento_id}/{review_username}/:
+    get:
+      tags:
+        - Reviews
+      summary: Obtener review individual por usuario en un evento
+      operationId: verReviewIndividual
+      parameters:
+        - name: evento_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: review_username
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Review encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '404':
+          description: Evento, usuario o review no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/reviews/{evento_id}/{review_username}/like/:
+    post:
+      tags:
+        - Reviews
+      summary: Dar like o dislike a una review
+      operationId: darLikeDislike
+      security:
+        - TokenAuth: []
+      parameters:
+        - name: evento_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: review_username
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - is_like
+              properties:
+                is_like:
+                  type: boolean
+                  description: true para like, false para dislike
+      responses:
+        '200':
+          description: Like/Dislike agregado o actualizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                  likes_count:
+                    type: integer
+                  dislikes_count:
+                    type: integer
+                  user_liked:
+                    type: boolean
+                    nullable: true
+        '400':
+          description: Error en datos de entrada o al guardar
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Usuario, evento o review no encontrados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      tags:
+        - Reviews
+      summary: Eliminar like o dislike de una review
+      operationId: eliminarLikeDislike
+      security:
+        - TokenAuth: []
+      parameters:
+        - name: evento_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: review_username
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Like/Dislike eliminado correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                  likes_count:
+                    type: integer
+                  dislikes_count:
+                    type: integer
+                  user_liked:
+                    type: integer
+        '404':
+          description: No se encontró like/dislike para eliminar
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/calendar/add-event/:
+    post:
+      summary: Añade un evento al calendario del usuario actual
+      description: Añade un evento al calendario del usuario autenticado. Requiere `event_id` en el cuerpo.
+      tags:
+        - Calendar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - event_id
+              properties:
+                event_id:
+                  type: integer
+                  example: 123
+                  description: ID del evento a añadir
+      responses:
+        '201':
+          description: Evento añadido exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Evento 'Concierto' añadido con éxito a tu calendario
+                  event_id:
+                    type: integer
+                    example: 123
+                  event_name:
+                    type: string
+                    example: Concierto
+                  calendar_created:
+                    type: boolean
+                    example: true
+                  calendar_id:
+                    type: integer
+                    example: 1
+        '400':
+          description: Petición incorrecta (falta event_id)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Se requiere el ID del evento (event_id)
+        '404':
+          description: Evento no encontrado o perfil no encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: El evento con ID 123 no existe
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Error al crear el calendario
+
+  /api/calendar/remove-event/{event_id}/:
+    delete:
+      summary: Elimina un evento del calendario del usuario actual
+      description: Elimina un evento específico del calendario del usuario autenticado
+      tags:
+        - Calendar
+      parameters:
+        - name: event_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID del evento a eliminar
+      responses:
+        '200':
+          description: Evento eliminado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Evento 'Concierto' eliminado exitosamente de tu calendario
+                  event_id:
+                    type: integer
+                    example: 123
+        '400':
+          description: El usuario no tiene un calendario asociado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: El usuario no tiene un calendario asociado
+        '404':
+          description: Evento no encontrado o no está en el calendario
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Este evento no está en tu calendario
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Error al buscar o eliminar el evento
+
+  /api/calendar/events/:
+    get:
+      summary: Obtiene todos los eventos guardados en el calendario del usuario
+      description: Devuelve la lista de eventos que el usuario tiene guardados en su calendario
+      tags:
+        - Calendar
+      responses:
+        '200':
+          description: Lista de eventos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Se encontraron 3 eventos en tu calendario
+                  events:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 123
+                        name:
+                          type: string
+                          example: Concierto
+                        description:
+                          type: string
+                          example: Evento musical en la ciudad
+                        inidate:
+                          type: string
+                          format: date-time
+                          example: "2025-05-30T20:00:00Z"
+                        enddate:
+                          type: string
+                          format: date-time
+                          example: "2025-05-30T23:00:00Z"
+                        location:
+                          type: object
+                          nullable: true
+                          properties:
+                            address:
+                              type: string
+                              example: Calle Falsa 123
+                            latitude:
+                              type: number
+                              format: float
+                              example: 41.3851
+                            longitude:
+                              type: number
+                              format: float
+                              example: 2.1734
+                            zipcode:
+                              type: string
+                              example: "08001"
+        '404':
+          description: No se encontró perfil o calendario
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: El usuario no tiene un calendario asociado
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Error al obtener eventos del calendario
+
+  /api/event-chat/join/:
+    post:
+      summary: Unirse a un chat de evento (crea si no existe)
+      description: >
+        Permite a un usuario autenticado unirse al chat de un evento.  
+        Si no existe el chat para el evento, se crea automáticamente.  
+        Requiere `event_id` en el cuerpo JSON.
+      tags:
+        - Event Chat
+      security:
+        - TokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - event_id
+              properties:
+                event_id:
+                  type: integer
+                  example: 15
+                  description: ID del evento al que se quiere unir el chat
+      responses:
+        '200':
+          description: Usuario unido exitosamente o chat creado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  chat_id:
+                    type: integer
+                    example: 5
+                  is_new:
+                    type: boolean
+                    example: true
+                    description: Indica si el chat fue creado (true) o ya existía (false)
+                  event_name:
+                    type: string
+                    example: "Concierto de Rock"
+                  message:
+                    type: string
+                    example: "Te has unido al chat del evento exitosamente"
+        '400':
+          description: Parámetro event_id faltante o inválido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Falta el parámetro event_id"
+        '404':
+          description: Evento no encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "No existe un evento con ID 15"
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /api/event-chat/{chat_id}/messages/:
+    get:
+      summary: Obtener mensajes de un chat de evento
+      description: Devuelve los mensajes ordenados por fecha y hora de un chat específico de evento.
+      tags:
+        - Event Chat
+      security:
+        - TokenAuth: []
+      parameters:
+        - name: chat_id
+          in: path
+          required: true
+          description: ID del chat de evento
+          schema:
+            type: integer
+            example: 5
+      responses:
+        '200':
+          description: Lista de mensajes del chat
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Se encontraron 10 mensajes"
+                  messages:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        senderUsername:
+                          type: string
+                          example: "usuario123"
+                        message:
+                          type: string
+                          example: "Hola a todos"
+                        date:
+                          type: string
+                          format: date
+                          example: "2025-05-26"
+                        time:
+                          type: string
+                          format: time
+                          example: "14:30:00"
+        '400':
+          description: El chat no es un chat de evento
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "El chat especificado no es un chat de evento"
+        '404':
+          description: Chat de evento no encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Chat de evento no encontrado"
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /api/event-chat/send/:
+    post:
+      summary: Enviar un mensaje a un chat de evento
+      description: Envía un mensaje a un chat de evento específico.  
+        Requiere `chat_id` y `message` en el cuerpo JSON.
+      tags:
+        - Event Chat
+      security:
+        - TokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - chat_id
+                - message
+              properties:
+                chat_id:
+                  type: integer
+                  example: 5
+                  description: ID del chat de evento
+                message:
+                  type: string
+                  example: "¡Nos vemos en el evento!"
+                  description: Texto del mensaje a enviar
+      responses:
+        '201':
+          description: Mensaje enviado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Mensaje enviado correctamente"
+                  details:
+                    type: object
+                    properties:
+                      senderUsername:
+                        type: string
+                        example: "usuario123"
+                      message:
+                        type: string
+                        example: "¡Nos vemos en el evento!"
+                      date:
+                        type: string
+                        format: date
+                        example: "2025-05-26"
+                      time:
+                        type: string
+                        format: time
+                        example: "14:45:00"
+        '400':
+          description: Parámetros obligatorios faltantes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Parámetros obligatorios: chat_id y message"
+        '404':
+          description: Chat de evento no encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Chat de evento no encontrado"
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /api/event-chat/my-chats/:
+    get:
+      summary: Listar chats de eventos del usuario
+      description: >
+        Lista todos los chats de eventos donde el usuario tiene mensajes,  
+        ordenados por el último mensaje (más recientes primero).
+      tags:
+        - Event Chat
+      security:
+        - TokenAuth: []
+      responses:
+        '200':
+          description: Lista de chats de eventos del usuario
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Se encontraron 3 chats de eventos"
+                  event_chats:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        event_id:
+                          type: integer
+                          example: 12
+                        event_name:
+                          type: string
+                          example: "Concierto de Jazz"
+                        chat_id:
+                          type: integer
+                          example: 7
+                        last_message:
+                          type: object
+                          nullable: true
+                          properties:
+                            date:
+                              type: string
+                              format: date
+                              example: "2025-05-25"
+                            time:
+                              type: string
+                              format: time
+                              example: "20:15:00"
+                            username:
+                              type: string
+                              example: "usuario123"
+                            text:
+                              type: string
+                              example: "Nos vemos allá!"
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /groups/create/:
+    post:
+      summary: Crear un nuevo grupo
+      description: |
+        Crea un grupo nuevo. El usuario que crea se convierte en creador.
+        Requiere nombre del grupo y opcionalmente groupphoto_id.
+      tags:
+        - Groups
+      security:
+        - TokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  example: Grupo Ejemplo
+                groupphoto_id:
+                  type: integer
+                  nullable: true
+                  example: 5
+      responses:
+        '201':
+          description: Grupo creado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  group:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                      chat_id:
+                        type: integer
+                      created_by:
+                        type: string
+        '400':
+          description: Petición inválida (falta nombre)
+        '500':
+          description: Error interno del servidor
+
+  /groups/join/:
+    post:
+      summary: Solicitar unirse a un grupo
+      description: |
+        Envía una solicitud para unirse a un grupo.  
+        Si el usuario tiene invitación pendiente, la acepta automáticamente.
+      tags:
+        - Groups
+      security:
+        - TokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - group_id
+              properties:
+                group_id:
+                  type: integer
+                  example: 123
+      responses:
+        '201':
+          description: Solicitud enviada o invitación aceptada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  status:
+                    type: string
+                  group:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+        '400':
+          description: Petición inválida (falta group_id)
+        '404':
+          description: Grupo no encontrado
+        '500':
+          description: Error interno del servidor
+
+  /groups/search/:
+    get:
+      summary: Buscar grupos por nombre
+      description: Busca grupos que coincidan con el término de búsqueda.
+      tags:
+        - Groups
+      security:
+        - TokenAuth: []
+      parameters:
+        - in: query
+          name: query
+          schema:
+            type: string
+          required: true
+          description: Término de búsqueda
+      responses:
+        '200':
+          description: Lista de grupos encontrados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  groups:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                        is_member:
+                          type: boolean
+        '400':
+          description: Parámetro query obligatorio
+        '500':
+          description: Error interno del servidor
+
+  /groups/{group_id}/messages/:
+    get:
+      summary: Obtener mensajes de un grupo
+      description: Devuelve los mensajes del grupo especificado.
+      tags:
+        - Groups
+      security:
+        - TokenAuth: []
+      parameters:
+        - in: path
+          name: group_id
+          schema:
+            type: integer
+          required: true
+          description: ID del grupo
+      responses:
+        '200':
+          description: Lista de mensajes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  group_name:
+                    type: string
+                  messages:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          format: date
+                        time:
+                          type: string
+                          format: time
+                        username:
+                          type: string
+                        text:
+                          type: string
+        '403':
+          description: Usuario no miembro del grupo
+        '404':
+          description: Grupo no encontrado
+        '500':
+          description: Error interno del servidor
+
+  /groups/send/:
+    post:
+      summary: Enviar un mensaje a un grupo
+      description: Envía un mensaje a un grupo al que pertenece el usuario.
+      tags:
+        - Groups
+      security:
+        - TokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - group_id
+                - message
+              properties:
+                group_id:
+                  type: integer
+                  example: 123
+                message:
+                  type: string
+                  example: Hola a todos
+      responses:
+        '201':
+          description: Mensaje enviado correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  details:
+                    type: object
+                    properties:
+                      group_name:
+                        type: string
+                      senderUsername:
+                        type: string
+                      text:
+                        type: string
+                      date:
+                        type: string
+                        format: date
+                      time:
+                        type: string
+                        format: time
+        '400':
+          description: Datos inválidos o incompletos
+        '403':
+          description: Usuario no miembro del grupo
+        '404':
+          description: Grupo no encontrado
+        '500':
+          description: Error interno del servidor
+
+  /groups/my-groups/:
+    get:
+      summary: Listar grupos del usuario
+      description: Devuelve los grupos a los que pertenece el usuario con su último mensaje.
+      tags:
+        - Groups
+      security:
+        - TokenAuth: []
+      responses:
+        '200':
+          description: Lista de grupos del usuario
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  groups:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                        role:
+                          type: string
+                        last_message:
+                          type: object
+                          nullable: true
+                          properties:
+                            date:
+                              type: string
+                              format: date
+                            time:
+                              type: string
+                              format: time
+                            username:
+                              type: string
+                            text:
+                              type: string
+        '500':
+          description: Error interno del servidor
+  /groups/{group_id}/requests/:
+    get:
+      summary: Listar solicitudes pendientes para un grupo
+      description: Solo accesible para administradores y creadores del grupo.
+      tags:
+        - Groups
+      parameters:
+        - name: group_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID del grupo
+      security:
+        - TokenAuth: []
+      responses:
+        '200':
+          description: Lista de solicitudes pendientes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  group_name:
+                    type: string
+                  requests:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        username:
+                          type: string
+                        request_date:
+                          type: string
+                          format: date-time
+        '403':
+          description: Forbidden - no es administrador ni creador
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Grupo no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /groups/handle-request/:
+    post:
+      summary: Aceptar o rechazar una solicitud para unirse a un grupo
+      tags:
+        - Groups
+      security:
+        - TokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - request_id
+                - action
+              properties:
+                request_id:
+                  type: integer
+                  description: ID de la solicitud
+                action:
+                  type: string
+                  enum: [accept, reject]
+                  description: Acción a realizar
+      responses:
+        '200':
+          description: Confirmación de acción realizada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  group_name:
+                    type: string
+        '400':
+          description: Parámetros inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden - no autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Solicitud no encontrada o ya procesada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /groups/invite/:
+    post:
+      summary: Invitar a un usuario a unirse a un grupo
+      tags:
+        - Groups
+      security:
+        - TokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - group_id
+                - username
+              properties:
+                group_id:
+                  type: integer
+                  description: ID del grupo
+                username:
+                  type: string
+                  description: Nombre de usuario a invitar
+      responses:
+        '201':
+          description: Invitación enviada con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  group_name:
+                    type: string
+        '400':
+          description: Parámetros inválidos o usuario ya miembro
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden - no autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Grupo o usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /groups/my-invitations/:
+    get:
+      summary: Listar invitaciones pendientes para el usuario actual
+      tags:
+        - Groups
+      security:
+        - TokenAuth: []
+      responses:
+        '200':
+          description: Lista de invitaciones pendientes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  invitations:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        group_id:
+                          type: integer
+                        group_name:
+                          type: string
+                        invited_by:
+                          type: string
+                          nullable: true
+                        invitation_date:
+                          type: string
+                          format: date-time
+        '500':
+          description: Error del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /groups/respond-invitation/:
+    post:
+      summary: Aceptar o rechazar una invitación a un grupo
+      tags:
+        - Groups
+      security:
+        - TokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - invitation_id
+                - action
+              properties:
+                invitation_id:
+                  type: integer
+                  description: ID de la invitación
+                action:
+                  type: string
+                  enum: [accept, reject]
+                  description: Acción a realizar
+      responses:
+        '200':
+          description: Confirmación de la acción realizada
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                      group:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                          name:
+                            type: string
+                          chat_id:
+                            type: integer
+                          your_role:
+                            type: string
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+        '400':
+          description: Parámetros inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Invitación no encontrada o ya procesada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/friendships/send-request/:
+    post:
+      summary: Enviar una solicitud de amistad a otro usuario
+      description: Enviar solicitud con el nombre de usuario en el cuerpo.
+      tags:
+        - Friendships
+      security:
+        - TokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+              properties:
+                username:
+                  type: string
+                  example: "usuario_destino"
+      responses:
+        '201':
+          description: Solicitud enviada o aceptada automáticamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: Error en datos enviados.
+        '403':
+          description: Bloqueo existente.
+        '404':
+          description: Usuario no encontrado.
+        '500':
+          description: Error interno del servidor.
+
+  /api/friendships/my-requests/:
+    get:
+      summary: Listar solicitudes pendientes para el usuario actual
+      tags:
+        - Friendships
+      security:
+        - TokenAuth: []
+      responses:
+        '200':
+          description: Lista de solicitudes pendientes.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  requests:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        username:
+                          type: string
+                        request_date:
+                          type: string
+                          format: date-time
+        '500':
+          description: Error interno.
+
+  /api/friendships/respond-request/:
+    post:
+      summary: Responder a una solicitud de amistad (aceptar o rechazar)
+      tags:
+        - Friendships
+      security:
+        - TokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - request
+                - action
+              properties:
+                request:
+                  type: integer
+                  example: 123
+                action:
+                  type: string
+                  enum: [accept, reject]
+      responses:
+        '200':
+          description: Confirmación de la respuesta.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: Error en datos.
+        '404':
+          description: Solicitud no encontrada.
+        '500':
+          description: Error interno.
+
+  /api/friendships/my-friends/:
+    get:
+      summary: Listar todos los amigos del usuario actual
+      tags:
+        - Friendships
+      security:
+        - TokenAuth: []
+      responses:
+        '200':
+          description: Lista de amigos.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  friends:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        username:
+                          type: string
+                        user_id:
+                          type: integer
+        '500':
+          description: Error interno.
+
+  /api/friendships/remove-friend/:
+    post:
+      summary: Eliminar un amigo por username
+      tags:
+        - Friendships
+      security:
+        - TokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+              properties:
+                username:
+                  type: string
+                  example: "usuario_a_eliminar"
+      responses:
+        '200':
+          description: Confirmación de eliminación.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: Faltan datos.
+        '404':
+          description: Usuario no amigo o no encontrado.
+        '500':
+          description: Error interno.
+
+  /api/friendships/block-user/:
+    post:
+      summary: Bloquear a un usuari
+      tags:
+        - Friendships
+      security:
+        - TokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+              properties:
+                username:
+                  type: string
+                  example: "usuario_a_bloquear"
+      responses:
+        '200':
+          description: Confirmación de bloqueo.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: Error en datos.
+        '404':
+          description: Usuario no encontrado.
+        '500':
+          description: Error interno.
+
+  /api/friendships/status/:
+    get:
+      summary: Obtener estado de amistad con otro usuario
+      tags:
+        - Friendships
+      security:
+        - TokenAuth: []
+      parameters:
+        - in: query
+          name: username
+          required: true
+          schema:
+            type: string
+          description: Nombre de usuario con el que verificar el estado
+      responses:
+        '200':
+          description: Estado de la relación.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [no_relation, friends, blocked, blocked_by]
+                  message:
+                    type: string
+                  friendship:
+                    type: object
+                    nullable: true
+                    properties:
+                      user1:
+                        type: string
+                      user2:
+                        type: string
+                      since:
+                        type: string
+                        format: date-time
+                      blocker:
+                        type: string
+                      blocked:
+                        type: string
+        '400':
+          description: Falta username.
+        '404':
+          description: Usuario no encontrado.
+        '500':
+          description: Error interno.
+
+components:
+  schemas:
+    EventsResponse:
+      type: object
+      properties:
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventBasic'
+
+    EventBasic:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        latitude:
+          type: number
+          format: float
+        longitude:
+          type: number
+          format: float
+
+    SearchResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventBasic'
+
+    EventRated:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        rating:
+          type: number
+          format: float
+
+    EventDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        location:
+          type: object
+          properties:
+            latitude:
+              type: number
+              format: float
+            longitude:
+              type: number
+              format: float
+
+    EventSearchResult:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        category:
+          type: string
+        date:
+          type: string
+          format: date
+        distance:
+          type: number
+          format: float
+
+    Review:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        id_evento:
+          type: integer
+        rating:
+          type: integer
+        text:
+          type: string
+          nullable: true
+        # Puedes añadir más campos según tu serializer
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+
+  securitySchemes:
+    TokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
