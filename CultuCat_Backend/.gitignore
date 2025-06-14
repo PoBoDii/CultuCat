@@ -1,0 +1,82 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Ignorar carpeta de Visual Studio
+.vs/
+
+# Ignorar carpeta de archivos temporales
+__pycache__/
+*.pyc
+
+# Firebase credentials
+#CultuCat_Django/firebase/firebase-credentials.json
+
+# Ignorar la carpeta Debug y todos sus archivos
+Debug/
+2DGame/02-Bubble/02-Bubble/Debug/
+
+# Archivos generados por Visual Studio
+*.user
+*.userosscache
+*.suo
+*.vscode/
+*.vspscc
+*.db
+*.bak
+*.log
+
+# Archivos de compilación
+*.ilk
+*.pdb
+*.idb
+*.obj
+*.exe
+
+# Ignorar archivos temporales del sistema
+Thumbs.db
+Desktop.ini
+"2DGame/02-Bubble/Debug/02-Bubble.exe" 
+"2DGame/02-Bubble/Debug/02-Bubble.pdb" 
+
+/myenv/*
+/venv/*
+CultuCat_Django/calendars/__pycache__/*
+CultuCat_Django/calendars/migrations/__pycache__/*
+CultuCat_Django/accounts/__pycache__/*
+CultuCat_Django/accounts/migrations/__pycache__/*
+CultuCat_Django/CultuCat_Django/__pycache__/*
+CultuCat_Django/CultuCat_Django/migrations/__pycache__/*
+
+# Ignorar el settings.py porque produccion tiene una configuracion diferente
+# Hay que subir los cambios a produccion a mano
+# CultuCat_Django/CultuCat_Django/settings.py
